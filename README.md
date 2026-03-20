@@ -4,7 +4,7 @@ Introduction:\
 This is a text-based puzzle solving escape room type game featuring multiple puzzles of varying difficulty based around the various topics of Computer Science, it is built in python as part of CMP2804 Team Software Engineering.
 
 The Team:\
-Mikołaj Smerinski - Team Leader\
+Mikołaj Smerlinski - Team Leader\
 Louie Maloney - UI/UX Designer\
 Kacper Leszczynski - Lead Developer\
 Sarah Varughese - Puzzle Designer\
