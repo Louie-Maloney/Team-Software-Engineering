@@ -1,12 +1,9 @@
-import pygame
-from title_screen import run_title_screen
+from puzzle import Puzzle
+import json
 
-pygame.init()
+with open('puzzles.json', 'r') as f:
+    puzzles_json = json.load(f)
+    puzzles = puzzles_json['puzzles']
 
-screen = pygame.display.set_mode((1280, 720))
-pygame.display.set_caption("CS Escape Room")
-clock = pygame.time.Clock()
-
-run_title_screen(screen, clock)
-
-pygame.quit()
+p = Puzzle(puzzles[0])
+p.print_puzzle_info()

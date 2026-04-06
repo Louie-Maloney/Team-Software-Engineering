@@ -1,0 +1,17 @@
+{
+    "puzzles": [
+        {
+            "type": "binary",
+            "title": "The Locked Safe",
+            "difficulty": 1,
+            "data": {
+                "binary": ["01001000", "01001001"],
+                "solution": "HI"
+            },
+            "hints": [
+                "There's an ASCII chart on the wall — try EXAMINE CHART.",
+                "Convert each group of 8 bits to a decimal number first."
+            ]
+        }
+    ]
+}
