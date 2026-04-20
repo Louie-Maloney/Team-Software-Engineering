@@ -1,17 +1,32 @@
 {
     "puzzles": [
         {
-            "type": "binary",
-            "title": "The Locked Safe",
-            "difficulty": 1,
-            "data": {
-                "binary": ["01001000", "01001001"],
-                "solution": "HI"
-            },
-            "hints": [
+			"type": "binary",
+			"title": "The Locked Safe",
+			"difficulty": 1,
+			"room_description": "You're in a dimly lit server room. Cables snake across the floor. A heavy safe sits against the wall. On the wall hangs a faded chart.",
+			"data": {
+				"binary": ["01001000", "01001001"],
+				"solution": "HI"
+			},			
+			"items": {
+				"safe": {
+					"description": "A heavy iron safe with a keypad. Binary sequences are etched into the door.",
+					"examine": "Two sequences are engraved: [ 01001000 ] [ 01001001 ]\nThe keypad has a prompt: 'Enter the ASCII characters.'"
+				},
+				"chart": {
+					"description": "A faded poster on the wall.",
+					"examine": "An ASCII reference chart. Useful values:\n  H = 72 = 01001000\n  I = 73 = 01001001\n  A = 65  B = 66  C = 67 ..."
+				},
+				"keypad": {
+					"description": "A numeric keypad beside the safe.",
+					"examine": "The keypad accepts text input. Type your answer to unlock the safe."
+				}
+			},
+			"hints": [
                 "There's an ASCII chart on the wall — try EXAMINE CHART.",
                 "Convert each group of 8 bits to a decimal number first."
-            ]
-        }
+			]
+		}
     ]
 }

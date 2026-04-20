@@ -1,6 +1,7 @@
 from puzzle import Puzzle
 import json
 from colorama import Fore, Style, init
+from puzzles import load_puzzle
 
 init()
 
@@ -20,13 +21,31 @@ def load_puzzles():
         puzzles_json = json.load(f)
         return puzzles_json['puzzles']
 
+def play(p: Puzzle):
+    p.display()
+    while not p.solved:
+        text_input = input(f"> ")
+        if not text_input:
+            continue
+        
+        result = p.handle_command(text_input)
+        if result == 'quit':
+            return 'quit'
+        if result == 'solved':
+            return 'solved'
+        if result == 'continue':
+            continue
+        if result == 'wrong':
+            continue
+        
 
 puzzles = load_puzzles()
 
-p = Puzzle(puzzles[0])
-p.print_puzzle_info()
+for i, config in enumerate(puzzles):
+    p = load_puzzle(config)  
+    play(p)
 
-title_screen()
+
 
 
 # uncomment below when actually doign proper runs, no point rn when still early dev
