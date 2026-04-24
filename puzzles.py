@@ -161,10 +161,83 @@ class PatternPuzzle(Puzzle):
             print("Please enter a valid integer number.")
             return False
 
+class BooleanPuzzle(Puzzle):
+    def __init__(self, config):
+        super().__init__(config)
+        self.switches = dict(config['data']['switches'])  # copy so we don't mutate config
+        self.expression = config['data']['expression']
+
+    def help(self):
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, FLIP <SWITCH>, RESET, HINT, QUIT")
+
+    def evaluate(self):
+        s = self.switches
+        return (s['A'] and s['B']) or (not s['C'] and s['D'])
+
+    def display_switches(self):
+        header = "+---" * len(self.switches) + "+"
+        labels = "| " + " | ".join(self.switches.keys()) + " |"
+        values = "| " + " | ".join(str(v) for v in self.switches.values()) + " |"
+        result = self.evaluate()
+        print(f"\nExpression: {self.expression}")
+        print(header)
+        print(labels)
+        print(values)
+        print(header)
+        if result:
+            print(f"Result: {Fore.GREEN}TRUE   [UNLOCKED!]{Style.RESET_ALL}\n")
+        else:
+            print(f"Result: {Fore.RED}FALSE  [LOCKED]{Style.RESET_ALL}\n")
+
+    def display(self):
+        print(f"puzzle: {self.title}")
+        print(f"difficulty: {self.difficulty}")
+        self.look()
+        self.help()
+        self.display_switches()
+
+    def handle_command(self, input):
+        command = input.split(None, 1)
+        action = command[0].lower()
+
+        if action == 'flip':
+            if len(command) > 1:
+                key = command[1].strip().upper()
+                if key in self.switches:
+                    self.switches[key] ^= 1  # toggle
+                    print(f"Switch {key} → {self.switches[key]}")
+                    self.display_switches()
+                    if self.evaluate():
+                        print("The light turns GREEN. The door clicks open!")
+                        self.solved = True
+                        print(" ")
+                        print(" ")
+                        return 'solved'
+                    return 'continue'
+
+                else:
+                    print(f"No switch '{key}'. Valid switches: {', '.join(self.switches.keys())}")
+                    return 'continue'
+            else:
+                print("Usage: FLIP <switch>  e.g. FLIP A")
+                return 'continue'
+
+        elif action == 'reset':
+            for k in self.switches:
+                self.switches[k] = 0
+            print("All switches reset to 0.")
+            self.display_switches()
+            return 'continue'
+
+        else:
+            return super().handle_command(input)
+        
 
 def load_puzzle(config):
     if config['type'] == 'binary':
         return BinaryPuzzle(config)
+    elif config['type'] == 'boolean':
+        return BooleanPuzzle(config)
     elif config['type'] == 'caesar':
         return CaesarPuzzle(config)
     elif config['type'] == 'pattern':
