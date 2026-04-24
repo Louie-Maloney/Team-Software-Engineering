@@ -93,6 +93,35 @@
                 "Are the numbers being added together, multiplied, or something else?",
                 "Round 1: try doubling the last number."
             ]
+        },
+		{
+            "type": "boolean",
+            "title": "The Logic Gate Lock",
+            "difficulty": 2,
+            "room_description": "You face a large, heavy door with 4 coloured switches: A,B,C and D, and a display showing a Boolean expression.",
+            "data": {
+                "expression": "(A AND B) OR (NOT C)",
+                "switches": {"A": 0, "B": 0, "C": 0, "D": 0}
+            },
+            "items": {
+                "door": {
+                    "description": "A heavy door with four switches and a display above it.",
+                    "examine": "The display reads: (A AND B) OR (NOT C)\nThe light above the door is RED. [LOCKED]"
+                },
+                "switches": {
+                    "description": "Four coloured switches labelled A, B, C and D.",
+                    "examine": "Each switch can be ON (1) or OFF (0).\nUse FLIP <switch> to toggle a switch.\nExample: FLIP A"
+                },
+                "manual": {
+                    "description": "A laminated instruction card on the wall.",
+                    "examine": "Boolean logic reference:\n  AND — true only if BOTH sides are true\n  OR  — true if EITHER side is true\n  NOT — inverts the value (0 becomes 1, 1 becomes 0)"
+                }
+            },
+            "hints": [
+                "Try EXAMINE MANUAL to read the logic reference card.",
+                "Work from the inside out. What makes (NOT C) true?",
+                "If C is 0, then NOT C is 1. OR only needs one side to be true — so the whole expression becomes true."
+            ]
         }
     ]
 }
