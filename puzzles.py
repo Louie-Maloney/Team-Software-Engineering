@@ -242,5 +242,7 @@ def load_puzzle(config):
         return CaesarPuzzle(config)
     elif config['type'] == 'pattern':
         return PatternPuzzle(config)
+    elif config['type'] == 'parity':
+        return ParityPuzzle(config)
     else:
         return Puzzle(config) # worst case something fucks up
