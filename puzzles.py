@@ -232,7 +232,69 @@ class BooleanPuzzle(Puzzle):
         else:
             return super().handle_command(input)
         
+class ParityPuzzle(Puzzle):
+    def help(self):
+        print("commands: HELP, LOOK, CHECK ROW <n>, CHECK COL <n>, FIX <row> <col>, QUIT")
 
+    def display(self):
+        print(f"puzzle: {self.title}")
+        print(f"difficulty: {self.difficulty}")
+        self.look()
+        self.help()
+        self.print_grid()
+
+    def print_grid(self):
+        grid = self.data['grid']
+        print("\nGrid:")
+        for i, row in enumerate(grid):
+            print(f"R{i+1}: {row}")
+
+    def check_row(self, r):
+        row = self.data['grid'][r]
+        return sum(row) % 2 == 0
+
+    def check_col(self, c):
+        col = [row[c] for row in self.data['grid']]
+        return sum(col) % 2 == 0
+
+    def handle_command(self, input):
+        parts = input.split()
+
+        if parts[0].lower() == "check":
+            if len(parts) < 3:
+                print("Usage: CHECK ROW <n> or CHECK COL <n>")
+                return 'continue'
+
+            if parts[1].lower() == "row":
+                r = int(parts[2]) - 1
+                result = self.check_row(r)
+                print("PASS" if result else "FAIL")
+
+            elif parts[1].lower() == "col":
+                c = int(parts[2]) - 1
+                result = self.check_col(c)
+                print("PASS" if result else "FAIL")
+
+            return 'continue'
+
+        elif parts[0].lower() == "fix":
+            if len(parts) < 3:
+                print("Usage: FIX <row> <col>")
+                return 'continue'
+
+            r = int(parts[1]) - 1
+            c = int(parts[2]) - 1
+
+            if [r, c] == self.data['error']:
+                print("Correct bit fixed! File restored.")
+                self.solved = True
+                return 'solved'
+            else:
+                print("That didn't fix the issue.")
+                return 'wrong'
+
+        return super().handle_command(input)
+        
 def load_puzzle(config):
     if config['type'] == 'binary':
         return BinaryPuzzle(config)
