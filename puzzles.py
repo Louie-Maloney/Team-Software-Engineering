@@ -467,4 +467,4 @@ def load_puzzle(config):
     elif config['type'] == 'robot':
         return RobotPuzzle(config)
     else:
-        return Puzzle(config) # worst case something fucks up
+        return Puzzle(config) # worst case if errors
