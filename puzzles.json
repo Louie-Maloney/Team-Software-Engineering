@@ -142,6 +142,32 @@
 			    "Avoid obstacles",
 			    "Think step-by-step"
 			]
+		  "type": "parity",
+		  "title": "The Corrupted File",
+		  "difficulty": 3,
+		  "room_description": "A terminal displays a corrupted data grid. Parity bits line the edges.",
+		  "data": {
+		    "grid": [
+		      [1,0,1,1],
+		      [0,1,0,1],
+		      [1,1,0,0],
+		      [0,0,1,1]
+		    ],
+		    "row_parity": [1,0,0,0],
+		    "col_parity": [0,0,0,1],
+		    "error": [1,2] 
+		  },
+		  "items": {
+		    "terminal": {
+		      "description": "A glowing terminal showing binary data.",
+		      "examine": "Rows and columns use EVEN parity. One bit is incorrect."
+		    }
+		  },
+		  "hints": [
+		    "Even parity means even number of 1s",
+		    "Check rows and columns",
+		    "Find where both fail" 
+		  ]
 		}
     ]
 }
