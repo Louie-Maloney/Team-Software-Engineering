@@ -2,6 +2,8 @@ from puzzle import Puzzle
 from colorama import Fore, Style
 
 class BinaryPuzzle(Puzzle):
+    
+    
     def check_input(self, input):
         # Input validation: must be a non-empty string, only alphabetic characters allowed
         if not isinstance(input, str) or not input.strip():
@@ -156,7 +158,7 @@ class PatternPuzzle(Puzzle):
             return False
         try:
             number = int(input.strip())
-            return self.check_answer(number)
+            return self.check_answer(number) == 'solved'
         except ValueError:
             print("Please enter a valid integer number.")
             return False
@@ -231,162 +233,30 @@ class BooleanPuzzle(Puzzle):
 
         else:
             return super().handle_command(input)
+
 class RobotPuzzle(Puzzle):
-    def __init__(self, config):
-        super().__init__(config)
-
-        # Grid layout (4x5)
-        # R = robot start, X = exit, # = wall
-        self.grid = [
-            ["R", " ", " ", "#", " "],
-            ["#", " ", "#", " ", " "],
-            [" ", " ", " ", "#", " "],
-            [" ", "#", " ", " ", "X"]
-        ]
-
-        # Robot state
-        self.start_pos = (0, 0)
-        self.robot_pos = list(self.start_pos)
-        self.direction = "E"  # N, E, S, W
-        self.move_count = 0
-
-        # Direction vectors
-        self.directions = ["N", "E", "S", "W"]
-        self.moves = {
-            "N": (-1, 0),
-            "E": (0, 1),
-            "S": (1, 0),
-            "W": (0, -1)
-        }
-
-    # Display
-    def display_grid(self):
-        print()
-        for row in range(len(self.grid)):
-            print("  +---+---+---+---+---+")
-            row_display = "|"
-            for col in range(len(self.grid[row])):
-                if [row, col] == self.robot_pos:
-                    cell = "R"
-                else:
-                    cell = self.grid[row][col]
-                row_display += f" {cell} |"
-            print(" ", row_display)
-        print("  +---+---+---+---+---+")
-        print("  R = Robot  X = Exit  # = Wall\n")
-
-    def display(self):
-        print(f"puzzle: {self.title}")
-        print(f"difficulty: {self.difficulty}")
-        self.look()
-        self.help()
-        self.display_grid()
-
-    # Help
     def help(self):
-        print("commands: HELP, PROGRAM <commands>, HINT, QUIT")
-        print("Example: PROGRAM MOVE, MOVE, TURN RIGHT, MOVE")
+        print("commands: HELP, LOOK, PROGRAM <commands>, QUIT")
 
-    # Movement
-    def turn_left(self):
-        idx = self.directions.index(self.direction)
-        self.direction = self.directions[(idx - 1) % 4]
-
-    def turn_right(self):
-        idx = self.directions.index(self.direction)
-        self.direction = self.directions[(idx + 1) % 4]
-
-    def move_forward(self):
-        dr, dc = self.moves[self.direction]
-        new_r = self.robot_pos[0] + dr
-        new_c = self.robot_pos[1] + dc
-
-        # bounds check
-        if new_r < 0 or new_r >= 4 or new_c < 0 or new_c >= 5:
-            print("Robot hit a wall (boundary)! Program failed.")
-            return False
-
-        # obstacle check
-        if self.grid[new_r][new_c] == "#":
-            print("Robot hit an obstacle (#)! Program failed.")
-            return False
-
-        # move robot
-        self.robot_pos = [new_r, new_c]
-        self.move_count += 1
-
-        # check win
-        if self.grid[new_r][new_c] == "X":
-            print("\nRobot reached the exit!")
-            print(f"Moves used: {self.move_count}")
-            print("This demonstrates algorithm sequencing and planning.\n")
-            self.solved = True
-            return True
-
-        return None  # continue
-
-    # Execution
-    def execute_program(self, commands):
-        # reset state each run
-        self.robot_pos = list(self.start_pos)
-        self.direction = "E"
-        self.move_count = 0
-
-        print("\nExecuting program...\n")
-
-        for cmd in commands:
-            cmd = cmd.strip().upper()
-
-            if cmd == "MOVE":
-                result = self.move_forward()
-                self.display_grid()
-
-                if result is False:
-                    return 'continue'
-                if result is True:
-                    return 'solved'
-
-            elif cmd == "TURN LEFT":
-                self.turn_left()
-
-            elif cmd == "TURN RIGHT":
-                self.turn_right()
-
-            else:
-                print(f"Invalid command: {cmd}")
-                return 'continue'
-
-        print("Program finished, but robot did not reach the exit.")
-        return 'continue'
-
-    # Command handler
     def handle_command(self, input):
-        command = input.split(None, 1)
+        parts = input.split(None, 1)
 
-        action = command[0].lower()
-
-        if action == 'program':
-            if len(command) > 1:
-                commands = command[1].split(",")
-                return self.execute_program(commands)
-            else:
-                print("Usage: PROGRAM MOVE, MOVE, TURN RIGHT...")
+        if parts[0].lower() == "program":
+            if len(parts) < 2:
+                print("Usage: PROGRAM MOVE, MOVE, RIGHT...")
                 return 'continue'
 
-        elif action == 'hint':
-            self.hint()
-            return 'continue'
+            commands = [c.strip().upper() for c in parts[1].split(",")]
 
-        elif action == 'help':
-            self.help()
-            return 'continue'
+            if commands == self.data['correct_path']:
+                print("Robot reached the exit successfully!")
+                self.solved = True
+                return 'solved'
+            else:
+                print("Robot crashed into a wall. Try again.")
+                return 'wrong'
 
-        elif action == 'quit':
-            return 'quit'
-
-        else:
-            print("Invalid command. Type HELP.")
-            return 'continue'        
+        return super().handle_command(input)
 
 def load_puzzle(config):
     if config['type'] == 'binary':

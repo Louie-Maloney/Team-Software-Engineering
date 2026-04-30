@@ -41,6 +41,8 @@ def play(p: Puzzle):
 
 puzzles = load_puzzles()
 
+title_screen()
+
 for i, config in enumerate(puzzles):
     p = load_puzzle(config)  
     play(p)
