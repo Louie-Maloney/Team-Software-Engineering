@@ -124,26 +124,6 @@
             ]
         },
         {
-            "type": "robot",
-            "title": "The Robot Navigator",
-            "difficulty": 3,
-            "room_description": "A robot must reach the exit through a grid with obstacles.",
-            "data": {
-                "correct_path": ["MOVE", "MOVE", "RIGHT", "MOVE"]
-            },
-            "items": {
-                "robot": {
-                    "description": "A small robot waiting for instructions.",
-                    "examine": "Use PROGRAM <commands> to guide it."
-                }
-            },
-            "hints": [
-                "Plan before executing",
-                "Avoid obstacles",
-                "Think step-by-step"
-            ]
-        },
-        {
             "type": "parity",
             "title": "The Corrupted File",
             "difficulty": 3,
@@ -170,24 +150,34 @@
                 "Check rows and columns",
                 "Find where both fail"
             ]
+        },
+        {
+            "type": "robot",
+            "title": "The Robot Navigator",
+            "difficulty": 3,
+            "room_description": "A small robot sits in a grid-based room filled with obstacles. You must program it to reach the exit.",
+            "data": {
+                "grid": [
+                    [0, 0, 0, 1, 0],
+                    [1, 0, 1, 0, 0],
+                    [0, 0, 0, 1, 0],
+                    [0, 1, 0, 0, 0]
+                ],
+                "start": [0, 0],
+                "start_direction": "EAST",
+                "exit": [3, 4]
+            },
+            "items": {
+                "grid": {
+                    "description": "A grid showing the robot, walls, and exit.",
+                    "examine": "> = Robot (facing right at start)  X = Exit  # = Wall\nValid commands: MOVE, TURN LEFT, TURN RIGHT\nSubmit with: PROGRAM MOVE, TURN RIGHT, MOVE, ..."
+                }
+            },
+            "hints": [
+                "Plan your full route before running — commands execute all at once and you can't adjust mid-run.",
+                "Use TURN LEFT and TURN RIGHT to change direction, then MOVE to advance one square.",
+                "Try heading right one step, then turning south and working your way down and around to the bottom-right exit."
+            ]
         }
-		{
-		  "type": "robot",
-		  "title": "The Robot Navigator",
-		  "difficulty": 3,
-		  "room_description": "A small robot sits in a grid-based room filled with obstacles. You must program it to reach the exit.",
-		  "items": {
-		    "grid": {
-		      "description": "A grid showing the robot, walls, and exit.",
-		      "examine": "R = Robot start, X = Exit, # = Wall. Plan your path carefully."
-		    }
-		  },
-		  "hints": [
-		    "Plan your full route before running the program.",
-		    "You cannot change direction mid-run unless you include TURN commands.",
-		    "Try moving forward first, then navigating around obstacles."
-		  ],
-		  "data": {}
-		}
     ]
 }

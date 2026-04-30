@@ -356,28 +356,102 @@ class ParityPuzzle(Puzzle):
             print("Invalid format. Try: CHECK ROW 2 or FIX ROW 2 COL 3")
             return 'continue'
 class RobotPuzzle(Puzzle):
+    DIRECTIONS = ['NORTH', 'EAST', 'SOUTH', 'WEST']
+    DELTA = {'NORTH': (-1, 0), 'EAST': (0, 1), 'SOUTH': (1, 0), 'WEST': (0, -1)}
+    DIR_ARROW = {'NORTH': '^', 'EAST': '>', 'SOUTH': 'v', 'WEST': '<'}
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.grid = config['data']['grid']
+        self.start = tuple(config['data']['start'])
+        self.exit_pos = tuple(config['data']['exit'])
+
     def help(self):
-        print("commands: HELP, LOOK, PROGRAM <commands>, QUIT")
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, PROGRAM <cmds>, QUIT")
+        print("  valid moves: MOVE  |  TURN LEFT  |  TURN RIGHT")
+        print("  example: PROGRAM MOVE, TURN RIGHT, MOVE, MOVE")
 
-    def handle_command(self, input):
-        parts = input.split(None, 1)
+    def _draw_grid(self, pos, direction):
+        cols = len(self.grid[0])
+        divider = '+' + '---+' * cols
+        print(divider)
+        for r, row in enumerate(self.grid):
+            cells = ''
+            for c, cell in enumerate(row):
+                if (r, c) == pos:
+                    cells += f' {self.DIR_ARROW[direction]} |'
+                elif (r, c) == self.exit_pos:
+                    cells += ' X |'
+                elif cell == 1:
+                    cells += ' # |'
+                else:
+                    cells += '   |'
+            print('|' + cells)
+            print(divider)
+        print(f"  {self.DIR_ARROW[direction]} = Robot ({direction})  X = Exit  # = Wall\n")
 
-        if parts[0].lower() == "program":
+    def display(self):
+        print(f"puzzle: {self.title}")
+        print(f"difficulty: {self.difficulty}")
+        self.look()
+        self.help()
+        print()
+        self._draw_grid(self.start, self.data['start_direction'])
+
+    def _simulate(self, commands):
+        pos = self.start
+        direction = self.data['start_direction']
+        rows = len(self.grid)
+        cols = len(self.grid[0])
+
+        for step, cmd in enumerate(commands, 1):
+            if cmd == 'MOVE':
+                dr, dc = self.DELTA[direction]
+                nr, nc = pos[0] + dr, pos[1] + dc
+                if not (0 <= nr < rows and 0 <= nc < cols) or self.grid[nr][nc] == 1:
+                    return 'crash', pos, direction, step
+                pos = (nr, nc)
+                if pos == self.exit_pos:
+                    return 'exit', pos, direction, step
+            elif cmd in ('TURN LEFT', 'TURN RIGHT'):
+                idx = self.DIRECTIONS.index(direction)
+                delta = 1 if cmd == 'TURN RIGHT' else -1
+                direction = self.DIRECTIONS[(idx + delta) % 4]
+            else:
+                return 'invalid', pos, direction, step
+
+        return 'stopped', pos, direction, len(commands)
+
+    def handle_command(self, inp):
+        parts = inp.split(None, 1)
+        action = parts[0].lower()
+
+        if action == 'program':
             if len(parts) < 2:
-                print("Usage: PROGRAM MOVE, MOVE, RIGHT...")
+                print("Usage: PROGRAM MOVE, TURN RIGHT, MOVE, ...")
                 return 'continue'
 
-            commands = [c.strip().upper() for c in parts[1].split(",")]
+            cmd_str = parts[1].lstrip(':').strip()
+            commands = [c.strip().upper() for c in cmd_str.split(',')]
 
-            if commands == self.data['correct_path']:
-                print("Robot reached the exit successfully!")
+            result, final_pos, final_dir, steps = self._simulate(commands)
+            self._draw_grid(final_pos, final_dir)
+
+            if result == 'exit':
+                print(f"Robot reached the exit in {steps} command(s)!")
                 self.solved = True
                 return 'solved'
+            elif result == 'crash':
+                print(f"Robot crashed at step {steps} — hit a wall or boundary. Try again.")
+                return 'wrong'
+            elif result == 'invalid':
+                print(f"Unknown command at step {steps}. Valid: MOVE, TURN LEFT, TURN RIGHT")
+                return 'continue'
             else:
-                print("Robot crashed into a wall. Try again.")
+                print(f"Program finished but robot is at row {final_pos[0]+1}, col {final_pos[1]+1} — exit not reached.")
                 return 'wrong'
 
-        return super().handle_command(input)
+        return super().handle_command(inp)
 
 def load_puzzle(config):
     if config['type'] == 'binary':
