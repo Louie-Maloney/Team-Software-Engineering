@@ -171,5 +171,23 @@
                 "Find where both fail"
             ]
         }
+		{
+		  "type": "robot",
+		  "title": "The Robot Navigator",
+		  "difficulty": 3,
+		  "room_description": "A small robot sits in a grid-based room filled with obstacles. You must program it to reach the exit.",
+		  "items": {
+		    "grid": {
+		      "description": "A grid showing the robot, walls, and exit.",
+		      "examine": "R = Robot start, X = Exit, # = Wall. Plan your path carefully."
+		    }
+		  },
+		  "hints": [
+		    "Plan your full route before running the program.",
+		    "You cannot change direction mid-run unless you include TURN commands.",
+		    "Try moving forward first, then navigating around obstacles."
+		  ],
+		  "data": {}
+		}
     ]
 }
