@@ -231,7 +231,128 @@ class BooleanPuzzle(Puzzle):
 
         else:
             return super().handle_command(input)
-        
+
+class ParityPuzzle(Puzzle):
+    def __init__(self, config):
+        super().__init__(config)
+
+        # 4x4 grid with one wrong bit
+        self.grid = [
+            [1, 0, 1, 1],
+            [0, 1, 0, 1],  # this row has wrong parity
+            [1, 1, 0, 0],
+            [0, 0, 1, 1]
+        ]
+
+        # parity bits (even parity expected)
+        self.row_parity = [1, 0, 0, 0]
+        self.col_parity = [0, 0, 0, 1]
+
+    # Display
+    def display_grid(self):
+        print("\n     C1 C2 C3 C4  P")
+        for i, row in enumerate(self.grid):
+            row_values = "  ".join(str(x) for x in row)
+            print(f"R{i+1}: {row_values} [{self.row_parity[i]}]")
+
+        col_parity_str = "".join(f"[{x}]" for x in self.col_parity)
+        print(f" P: {col_parity_str}\n")
+
+    def display(self):
+        print(f"puzzle: {self.title}")
+        print(f"difficulty: {self.difficulty}")
+        self.look()
+        self.help()
+        self.display_grid()
+
+    # Help
+    def help(self):
+        print("commands: HELP, CHECK ROW <n>, CHECK COL <n>, FIX ROW <r> COL <c>, QUIT")
+
+    # Parity check
+    def is_even(self, values):
+        return sum(values) % 2 == 0
+
+    def check_row(self, r):
+        row = self.grid[r]
+        total = sum(row) + self.row_parity[r]
+
+        if total % 2 == 0:
+            print(f"Row {r+1} parity: PASS")
+            return True
+        else:
+            print(f"Row {r+1} parity: FAIL")
+            return False
+
+    def check_col(self, c):
+        col = [self.grid[r][c] for r in range(4)]
+        total = sum(col) + self.col_parity[c]
+
+        if total % 2 == 0:
+            print(f"Column {c+1} parity: PASS")
+            return True
+        else:
+            print(f"Column {c+1} parity: FAIL")
+            return False
+
+    # Error fix
+    def fix(self, r, c):
+        # flip the bit
+        self.grid[r][c] ^= 1
+        print(f"Fixed bit at Row {r+1}, Column {c+1}")
+        self.display_grid()
+
+        # check if all rows & columns now valid
+        all_rows = all(self.check_row(i) for i in range(4))
+        all_cols = all(self.check_col(i) for i in range(4))
+
+        if all_rows and all_cols:
+            print("\nAll parity checks pass!")
+            print("The corrupted file has been repaired.")
+            print("Parity checking ensures data integrity in real-world systems.\n")
+            self.solved = True
+            return 'solved'
+
+        return 'continue'
+
+    # Command handler
+    def handle_command(self, input):
+        command = input.split()
+
+        if not command:
+            return 'continue'
+
+        action = command[0].lower()
+
+        try:
+            if action == 'check':
+                if command[1].lower() == 'row':
+                    r = int(command[2]) - 1
+                    self.check_row(r)
+                elif command[1].lower() == 'col':
+                    c = int(command[2]) - 1
+                    self.check_col(c)
+                return 'continue'
+
+            elif action == 'fix':
+                r = int(command[2]) - 1
+                c = int(command[4]) - 1
+                return self.fix(r, c)
+
+            elif action == 'help':
+                self.help()
+                return 'continue'
+
+            elif action == 'quit':
+                return 'quit'
+
+            else:
+                print("Invalid command. Type HELP.")
+                return 'continue'
+
+        except (IndexError, ValueError):
+            print("Invalid format. Try: CHECK ROW 2 or FIX ROW 2 COL 3")
+            return 'continue'
 
 def load_puzzle(config):
     if config['type'] == 'binary':
@@ -242,5 +363,7 @@ def load_puzzle(config):
         return CaesarPuzzle(config)
     elif config['type'] == 'pattern':
         return PatternPuzzle(config)
+    elif config['type'] == 'parity':
+        return ParityPuzzle(config)
     else:
         return Puzzle(config) # worst case something fucks up
