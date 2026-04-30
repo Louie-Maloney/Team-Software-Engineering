@@ -79,11 +79,9 @@ class CaesarPuzzle(Puzzle):
             return super().handle_command(input)
 
     def display(self):
-        print(f"puzzle: {self.title}")
-        print(f"difficulty: {self.difficulty}")
+        self.display_short_desc()
         self.look()
         self.help()
-        # show the encoded message and dial setting as a reminder at the start
         print(f"\nEncoded message: {self.data['encoded']}")
         print(f"Dial set to: {self.data['shift']}")
 
@@ -107,8 +105,7 @@ class PatternPuzzle(Puzzle):
             print(f"Sequence: {seq}, ?")
 
     def display(self):
-        print(f"puzzle: {self.title}")
-        print(f"difficulty: {self.difficulty}")
+        self.display_short_desc()
         self.look()
         self.help()
         self.display_current_sequence()
@@ -192,8 +189,7 @@ class BooleanPuzzle(Puzzle):
             print(f"Result: {Fore.RED}FALSE  [LOCKED]{Style.RESET_ALL}\n")
 
     def display(self):
-        print(f"puzzle: {self.title}")
-        print(f"difficulty: {self.difficulty}")
+        self.display_short_desc()
         self.look()
         self.help()
         self.display_switches()
@@ -261,8 +257,7 @@ class ParityPuzzle(Puzzle):
         print(f" P: {col_parity_str}\n")
 
     def display(self):
-        print(f"puzzle: {self.title}")
-        print(f"difficulty: {self.difficulty}")
+        self.display_short_desc()
         self.look()
         self.help()
         self.display_grid()
@@ -391,8 +386,7 @@ class RobotPuzzle(Puzzle):
         print(f"  {self.DIR_ARROW[direction]} = Robot ({direction})  X = Exit  # = Wall\n")
 
     def display(self):
-        print(f"puzzle: {self.title}")
-        print(f"difficulty: {self.difficulty}")
+        self.display_short_desc()
         self.look()
         self.help()
         print()
@@ -475,8 +469,7 @@ class BookshelfPuzzle(Puzzle):
         print(f"   Swaps: {self.swap_count}")
 
     def display(self):
-        print(f"puzzle: {self.title}")
-        print(f"difficulty: {self.difficulty}")
+        self.display_short_desc()
         self.look()
         self.help()
         self.display_shelf()

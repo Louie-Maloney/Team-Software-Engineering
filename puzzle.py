@@ -9,18 +9,8 @@ class Puzzle():
         self.items = config['items']
         self.solved = False
         self.hints_used = 0
-    
-    # this function will be removed in future, just for debug rn
-    def print_puzzle_info(self):
-        print(f'title: {self.title}')
-        print(f'difficulty: {self.difficulty}')
-        print(f'data: {self.data}')
-        print(f'hints: {self.hints}')
-        print(f'room_description: {self.room_description}')
-        print(f'items: {self.items}')
-        print(f'solved: {self.solved}')
         
-    # commands:
+    # base commands:
     # look: lists everything in room
     # examine: gives the "examine" field from the item
     # hint: shows hint
@@ -59,9 +49,7 @@ class Puzzle():
         
         if len(command) > 1:
             target = command[1]
-            
-        print(command, target)
-        
+                    
         if action == 'look':
             self.look()
         elif action == 'examine':
@@ -81,10 +69,13 @@ class Puzzle():
                 return 'solved'
             return 'wrong'
         return 'continue'
+    
+    def display_short_desc(self):
+        print(f"Puzzle: {self.title}")
+        print(f"Difficulty: " + "★ " * self.difficulty)
             
     def display(self):
-        print(f"puzzle: {self.title}")
-        print(f"difficulty: {self.difficulty}")
+        self.display_short_desc()
         self.look()
         self.help()
         

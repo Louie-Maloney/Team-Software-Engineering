@@ -41,19 +41,12 @@ def play(p: Puzzle):
 
 puzzles = load_puzzles()
 
-title_screen()
-
-for i, config in enumerate(puzzles):
-    p = load_puzzle(config)  
-    play(p)
-
-
-
-
-# uncomment below when actually doign proper runs, no point rn when still early dev
-
-# def main():
-#     title_screen()
-    
-# if __name__ == "__main__":
-#     main()
+def main():
+    title_screen()
+    for i, config in enumerate(puzzles):
+        p = load_puzzle(config)  
+        print("")
+        play(p)
+  
+if __name__ == "__main__":
+    main()
