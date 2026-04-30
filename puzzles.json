@@ -1,33 +1,33 @@
 {
     "puzzles": [
         {
-			"type": "binary",
-			"title": "The Locked Safe",
-			"difficulty": 1,
-			"room_description": "You're in a dimly lit server room. Cables snake across the floor. A heavy safe sits against the wall. On the wall hangs a faded chart.",
-			"data": {
-				"binary": ["01001000", "01001001"],
-				"solution": "HI"
-			},			
-			"items": {
-				"safe": {
-					"description": "A heavy iron safe with a keypad. Binary sequences are etched into the door.",
-					"examine": "Two sequences are engraved: [ 01001000 ] [ 01001001 ]\nThe keypad has a prompt: 'Enter the ASCII characters.'"
-				},
-				"chart": {
-					"description": "A faded poster on the wall.",
-					"examine": "An ASCII reference chart. Useful values:\n  H = 72 = 01001000\n  I = 73 = 01001001\n  A = 65  B = 66  C = 67 ..."
-				},
-				"keypad": {
-					"description": "A numeric keypad beside the safe.",
-					"examine": "The keypad accepts text input. Type your answer to unlock the safe."
-				}
-			},
-			"hints": [
+            "type": "binary",
+            "title": "The Locked Safe",
+            "difficulty": 1,
+            "room_description": "You're in a dimly lit server room. Cables snake across the floor. A heavy safe sits against the wall. On the wall hangs a faded chart.",
+            "data": {
+                "binary": ["01001000", "01001001"],
+                "solution": "HI"
+            },
+            "items": {
+                "safe": {
+                    "description": "A heavy iron safe with a keypad. Binary sequences are etched into the door.",
+                    "examine": "Two sequences are engraved: [ 01001000 ] [ 01001001 ]\nThe keypad has a prompt: 'Enter the ASCII characters.'"
+                },
+                "chart": {
+                    "description": "A faded poster on the wall.",
+                    "examine": "An ASCII reference chart. Useful values:\n  H = 72 = 01001000\n  I = 73 = 01001001\n  A = 65  B = 66  C = 67 ..."
+                },
+                "keypad": {
+                    "description": "A numeric keypad beside the safe.",
+                    "examine": "The keypad accepts text input. Type your answer to unlock the safe."
+                }
+            },
+            "hints": [
                 "There's an ASCII chart on the wall — try EXAMINE CHART.",
                 "Convert each group of 8 bits to a decimal number first."
-			]
-		},
+            ]
+        },
         {
             "type": "caesar",
             "title": "The Cipher Machine",
@@ -94,7 +94,7 @@
                 "Round 1: try doubling the last number."
             ]
         },
-		{
+        {
             "type": "boolean",
             "title": "The Logic Gate Lock",
             "difficulty": 2,
@@ -122,52 +122,54 @@
                 "Work from the inside out. What makes (NOT C) true?",
                 "If C is 0, then NOT C is 1. OR only needs one side to be true — so the whole expression becomes true."
             ]
+        },
+        {
+            "type": "robot",
+            "title": "The Robot Navigator",
+            "difficulty": 3,
+            "room_description": "A robot must reach the exit through a grid with obstacles.",
+            "data": {
+                "correct_path": ["MOVE", "MOVE", "RIGHT", "MOVE"]
+            },
+            "items": {
+                "robot": {
+                    "description": "A small robot waiting for instructions.",
+                    "examine": "Use PROGRAM <commands> to guide it."
+                }
+            },
+            "hints": [
+                "Plan before executing",
+                "Avoid obstacles",
+                "Think step-by-step"
+            ]
+        },
+        {
+            "type": "parity",
+            "title": "The Corrupted File",
+            "difficulty": 3,
+            "room_description": "A terminal displays a corrupted data grid. Parity bits line the edges.",
+            "data": {
+                "grid": [
+                    [1, 0, 1, 1],
+                    [0, 1, 0, 1],
+                    [1, 1, 0, 0],
+                    [0, 0, 1, 1]
+                ],
+                "row_parity": [1, 0, 0, 0],
+                "col_parity": [0, 0, 0, 1],
+                "error": [1, 2]
+            },
+            "items": {
+                "terminal": {
+                    "description": "A glowing terminal showing binary data.",
+                    "examine": "Rows and columns use EVEN parity. One bit is incorrect."
+                }
+            },
+            "hints": [
+                "Even parity means even number of 1s",
+                "Check rows and columns",
+                "Find where both fail"
+            ]
         }
-		{
-			  "type": "robot",
-			  "title": "The Robot Navigator",
-			  "difficulty": 3,
-			  "room_description": "A robot must reach the exit through a grid with obstacles.",
-			  "data": {
-			    "correct_path": ["MOVE", "MOVE", "RIGHT", "MOVE"]
-			  },
-			  "items": {
-			    "robot": {
-			      "description": "A small robot waiting for instructions.",
-			      "examine": "Use PROGRAM <commands> to guide it."
-			    }
-			  },
-			  "hints": [
-			    "Plan before executing",
-			    "Avoid obstacles",
-			    "Think step-by-step"
-			]
-		  "type": "parity",
-		  "title": "The Corrupted File",
-		  "difficulty": 3,
-		  "room_description": "A terminal displays a corrupted data grid. Parity bits line the edges.",
-		  "data": {
-		    "grid": [
-		      [1,0,1,1],
-		      [0,1,0,1],
-		      [1,1,0,0],
-		      [0,0,1,1]
-		    ],
-		    "row_parity": [1,0,0,0],
-		    "col_parity": [0,0,0,1],
-		    "error": [1,2] 
-		  },
-		  "items": {
-		    "terminal": {
-		      "description": "A glowing terminal showing binary data.",
-		      "examine": "Rows and columns use EVEN parity. One bit is incorrect."
-		    }
-		  },
-		  "hints": [
-		    "Even parity means even number of 1s",
-		    "Check rows and columns",
-		    "Find where both fail" 
-		  ]
-		}
     ]
 }
