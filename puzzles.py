@@ -453,6 +453,70 @@ class RobotPuzzle(Puzzle):
 
         return super().handle_command(inp)
 
+class BookshelfPuzzle(Puzzle):
+    OPTIMAL_SWAPS = 9  # minimum bubble-sort swaps for [8,3,5,1,9,2]
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.books = list(config['data']['initial'])
+        self.solution = config['data']['solution']
+        self.swap_count = 0
+
+    def help(self):
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, SWAP <n> <m>, QUIT")
+        print("  (SWAP uses position 1-6, not the number on the book)")
+
+    def display_shelf(self):
+        print("   " + " ".join(f"[{b}]" for b in self.books))
+        print("    |   |   |   |   |   |")
+        print("   =========================")
+        print("   |       BOOKSHELF       |")
+        print("   =========================")
+        print(f"   Swaps: {self.swap_count}")
+
+    def display(self):
+        print(f"puzzle: {self.title}")
+        print(f"difficulty: {self.difficulty}")
+        self.look()
+        self.help()
+        self.display_shelf()
+
+    def handle_command(self, input):
+        parts = input.split()
+        if parts and parts[0].lower() == 'swap':
+            if len(parts) == 3:
+                try:
+                    pos1 = int(parts[1])
+                    pos2 = int(parts[2])
+                except ValueError:
+                    print("Book positions must be numbers. Usage: SWAP <n> <m>")
+                    return 'continue'
+
+                n = len(self.books)
+                if not (1 <= pos1 <= n and 1 <= pos2 <= n):
+                    print(f"Book positions must be between 1 and {n}.")
+                    return 'continue'
+                if abs(pos1 - pos2) != 1:
+                    print("You can only swap neighbouring books (bubble sort rule).")
+                    return 'continue'
+
+                i, j = pos1 - 1, pos2 - 1
+                self.books[i], self.books[j] = self.books[j], self.books[i]
+                self.swap_count += 1
+                self.display_shelf()
+
+                if self.books == self.solution:
+                    print("\nThe bookshelf slides aside — a hidden door is revealed!")
+                    print(f"You solved it in {self.swap_count} swap(s). Optimal bubble sort: {self.OPTIMAL_SWAPS}.")
+                    self.solved = True
+                    return 'solved'
+                return 'continue'
+            else:
+                print("Usage: SWAP <n> <m>  e.g. SWAP 1 2")
+                return 'continue'
+        return super().handle_command(input)
+
+
 def load_puzzle(config):
     if config['type'] == 'binary':
         return BinaryPuzzle(config)
@@ -466,5 +530,7 @@ def load_puzzle(config):
         return ParityPuzzle(config)
     elif config['type'] == 'robot':
         return RobotPuzzle(config)
+    elif config['type'] == 'bookshelf':
+        return BookshelfPuzzle(config)
     else:
         return Puzzle(config) # worst case if errors

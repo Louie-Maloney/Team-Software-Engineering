@@ -178,6 +178,31 @@
                 "Use TURN LEFT and TURN RIGHT to change direction, then MOVE to advance one square.",
                 "Try heading right one step, then turning south and working your way down and around to the bottom-right exit."
             ]
+        },
+        {
+            "type": "bookshelf",
+            "title": "The Scrambled Bookshelf",
+            "difficulty": 2,
+            "room_description": "A tall bookshelf blocks a hidden doorway. Books are numbered but in the wrong order. A bronze plaque reads: 'Arrange me using the method of bubbles, and the door shall open.'",
+            "data": {
+                "initial": [8, 3, 5, 1, 9, 2],
+                "solution": [1, 2, 3, 5, 8, 9]
+            },
+            "items": {
+                "bookshelf": {
+                    "description": "A tall bookshelf blocking a hidden doorway. Books are numbered and out of order.",
+                    "examine": "Six numbered books sit on the shelf: [8] [3] [5] [1] [9] [2]\nA plaque reads: 'Arrange me using the method of bubbles, and the door shall open.'\nUse SWAP <n> <m> to swap two neighbouring books."
+                },
+                "plaque": {
+                    "description": "A bronze plaque fixed to the shelf.",
+                    "examine": "The plaque reads:\n'Arrange me using the method of bubbles, and the door shall open.\nSwap only neighbouring books. The largest number will bubble to the end.'"
+                }
+            },
+            "hints": [
+                "Bubble sort works by repeatedly swapping adjacent elements that are in the wrong order.",
+                "Start from the left — compare books 1 and 2. If book 1 is larger, swap them, then move to books 2 and 3.",
+                "The largest number will 'bubble' to the right end after one full pass. Optimal solution takes 9 swaps."
+            ]
         }
     ]
 }
