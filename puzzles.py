@@ -2,6 +2,8 @@ from puzzle import Puzzle
 from colorama import Fore, Style
 
 class BinaryPuzzle(Puzzle):
+    
+    
     def check_input(self, input):
         # Input validation: must be a non-empty string, only alphabetic characters allowed
         if not isinstance(input, str) or not input.strip():
@@ -156,7 +158,7 @@ class PatternPuzzle(Puzzle):
             return False
         try:
             number = int(input.strip())
-            return self.check_answer(number)
+            return self.check_answer(number) == 'solved'
         except ValueError:
             print("Please enter a valid integer number.")
             return False
@@ -353,6 +355,29 @@ class ParityPuzzle(Puzzle):
         except (IndexError, ValueError):
             print("Invalid format. Try: CHECK ROW 2 or FIX ROW 2 COL 3")
             return 'continue'
+class RobotPuzzle(Puzzle):
+    def help(self):
+        print("commands: HELP, LOOK, PROGRAM <commands>, QUIT")
+
+    def handle_command(self, input):
+        parts = input.split(None, 1)
+
+        if parts[0].lower() == "program":
+            if len(parts) < 2:
+                print("Usage: PROGRAM MOVE, MOVE, RIGHT...")
+                return 'continue'
+
+            commands = [c.strip().upper() for c in parts[1].split(",")]
+
+            if commands == self.data['correct_path']:
+                print("Robot reached the exit successfully!")
+                self.solved = True
+                return 'solved'
+            else:
+                print("Robot crashed into a wall. Try again.")
+                return 'wrong'
+
+        return super().handle_command(input)
 
 def load_puzzle(config):
     if config['type'] == 'binary':
@@ -365,5 +390,7 @@ def load_puzzle(config):
         return PatternPuzzle(config)
     elif config['type'] == 'parity':
         return ParityPuzzle(config)
+    elif config['type'] == 'robot':
+        return RobotPuzzle(config)
     else:
         return Puzzle(config) # worst case something fucks up
