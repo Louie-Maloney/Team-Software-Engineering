@@ -2,6 +2,8 @@ from puzzle import Puzzle
 from colorama import Fore, Style
 
 class BinaryPuzzle(Puzzle):
+    
+    
     def check_input(self, input):
         # Input validation: must be a non-empty string, only alphabetic characters allowed
         if not isinstance(input, str) or not input.strip():
@@ -156,7 +158,7 @@ class PatternPuzzle(Puzzle):
             return False
         try:
             number = int(input.strip())
-            return self.check_answer(number)
+            return self.check_answer(number) == 'solved'
         except ValueError:
             print("Please enter a valid integer number.")
             return False
