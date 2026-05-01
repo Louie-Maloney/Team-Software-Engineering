@@ -230,6 +230,137 @@ class BooleanPuzzle(Puzzle):
         else:
             return super().handle_command(input)
 
+from collections import deque
+
+class GraphPuzzle(Puzzle):
+    def __init__(self, config):
+        super().__init__(config)
+        self.graph = config['data']['graph']
+        self.start = config['data']['start']
+        self.exit = config['data']['exit']
+        self.current = self.start
+        self.path = [self.start]  # tracks the player's full route
+
+    def help(self):
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, MOVE <NODE>, BACK, PATH, HINT, QUIT")
+
+    def bfs_shortest_path(self):
+        # BFS to find the shortest path from start to exit
+        queue = deque([[self.start]])
+        visited = {self.start}
+
+        while queue:
+            path = queue.popleft()
+            node = path[-1]
+
+            if node == self.exit:
+                return path
+
+            for neighbour in self.graph.get(node, []):
+                if neighbour not in visited:
+                    visited.add(neighbour)
+                    queue.append(path + [neighbour])
+
+        return None  # no path found
+
+    def look(self):
+        # override look to show current node and connections instead of room items
+        connections = self.graph.get(self.current, [])
+        print(f"\nYou are at node [{self.current}].")
+        print(f"Connected tunnels lead to: {', '.join(f'[{n}]' for n in connections)}")
+        if self.current == self.start:
+            print("(This is where you started.)")
+
+    def display(self):
+        print(f"puzzle: {self.title}")
+        print(f"difficulty: {self.difficulty}")
+        print(f"\n{self.room_description}")
+        print("\nItems in the room:")
+        for item in self.items:
+            print(f"  {item}: {self.items[item]['description']}")
+        self.help()
+        self.look()
+
+    def handle_command(self, input):
+        command = input.split(None, 1)
+        action = command[0].lower()
+
+        if action == 'move':
+            if len(command) > 1:
+                target = command[1].strip().upper()
+                return self.move(target)
+            else:
+                print("Usage: MOVE <node>  e.g. MOVE B")
+                return 'continue'
+
+        elif action == 'back':
+            return self.go_back()
+
+        elif action == 'path':
+            print(f"Your route so far: {' -> '.join(self.path)}")
+            return 'continue'
+
+        elif action == 'look':
+            self.look()
+            return 'continue'
+
+        else:
+            return super().handle_command(input)
+
+    def move(self, target):
+        connections = self.graph.get(self.current, [])
+
+        if target not in self.graph:
+            print(f"[{target}] doesn't exist on the map.")
+            return 'continue'
+
+        if target not in connections:
+            print(f"There's no tunnel from [{self.current}] to [{target}]. Check the map.")
+            return 'continue'
+
+        self.current = target
+        self.path.append(target)
+        print(f"You move through the tunnel to [{target}].")
+
+        if self.current == self.exit:
+            return self.on_exit_reached()
+
+        self.look()
+        return 'continue'
+
+    def go_back(self):
+        if len(self.path) <= 1:
+            print("You're at the start — nowhere to go back to.")
+            return 'continue'
+
+        self.path.pop()
+        self.current = self.path[-1]
+        print(f"You backtrack to [{self.current}].")
+        self.look()
+        return 'continue'
+
+    def on_exit_reached(self):
+        player_steps = len(self.path) - 1  # steps = nodes visited minus start
+        optimal = self.bfs_shortest_path()
+        optimal_steps = len(optimal) - 1
+
+        print(f"\nYou found the exit!")
+        print(f"\nYour route:   {' -> '.join(self.path)} ({player_steps} steps)")
+        print(f"Optimal path: {' -> '.join(optimal)} ({optimal_steps} steps)")
+
+        if player_steps == optimal_steps:
+            print("\nThat was the shortest possible path. Perfect!")
+        else:
+            extra = player_steps - optimal_steps
+            print(f"\nYou took {extra} extra step{'s' if extra != 1 else ''}.")
+            print("The optimal route uses BFS — exploring all neighbours at the current")
+            print("distance before going deeper, guaranteeing the shortest path in an")
+            print("unweighted graph.")
+
+        self.solved = True
+        return 'solved'
+
+
 class ParityPuzzle(Puzzle):
     def __init__(self, config):
         super().__init__(config)
