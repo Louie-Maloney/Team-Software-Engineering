@@ -124,6 +124,43 @@
             ]
         },
         {
+            "type": "graph",
+            "title": "The Maze of Nodes",
+            "difficulty": 3,
+            "room_description": "You enter a dark network of tunnels. An ASCII map is pinned to the wall showing rooms connected by passages. Somewhere ahead is the exit.",
+            "data": {
+                "graph": {
+                    "A": ["B", "D"],
+                    "B": ["A", "C"],
+                    "C": ["B", "F", "X"],
+                    "D": ["A", "G"],
+                    "E": ["F", "H"],
+                    "F": ["C", "E"],
+                    "G": ["D", "H"],
+                    "H": ["G", "E"],
+                    "X": ["C"]
+                },
+                "start": "A",
+                "exit": "X"
+            },
+            "items": {
+                "map": {
+                    "description": "A hand-drawn map of the tunnel network pinned to the wall.",
+                    "examine": "     [A]---[B]---[C]\n      |         |   \\\n     [D]  [E]---[F]  [X]\n      |   |          EXIT\n     [G]---[H]\n\n  START: A    EXIT: X"
+                },
+                "sign": {
+                    "description": "A worn sign near the entrance.",
+                    "examine": "The sign reads:\n  Each room is connected to others by tunnels.\n  You can only move to rooms directly connected to your current room.\n  Use MOVE <node> to travel.\n  Use LOOK to see your current connections.\n  Use PATH to review where you have been.\n  Use BACK to retrace your last step."
+                }
+            },
+            "hints": [
+                "Try EXAMINE MAP to see the tunnel layout.",
+                "From A, you can go to B or D. Think about which direction gets you closer to X.",
+                "The shortest path visits 4 nodes. Try exploring level by level rather than going deep in one direction.",
+                "Shortest path: A -> B -> C -> X"
+            ]
+        },
+        {
             "type": "parity",
             "title": "The Corrupted File",
             "difficulty": 3,
