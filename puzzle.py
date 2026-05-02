@@ -14,10 +14,10 @@ class Puzzle():
     # look: lists everything in room
     # examine: gives the "examine" field from the item
     # hint: shows hint
-    # quit: quits game
-    
+    # skip: skips game
+
     def help(self):
-        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, QUIT")
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, SKIP")
         
     def look(self):
         print(f"room description: {self.room_description}")
@@ -59,8 +59,8 @@ class Puzzle():
                 print("choose something to examine")
         elif action == 'hint':
             self.hint()
-        elif action == 'quit':
-            return 'quit'
+        elif action == 'skip':
+            return 'skip'
         elif action == 'help':
             self.help()
         else:

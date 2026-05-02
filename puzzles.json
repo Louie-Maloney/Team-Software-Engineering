@@ -172,8 +172,8 @@
                     [1, 1, 0, 0],
                     [0, 0, 1, 1]
                 ],
-                "row_parity": [1, 0, 0, 0],
-                "col_parity": [0, 0, 0, 1],
+                "row_parity": [1, 1, 0, 0],
+                "col_parity": [0, 0, 1, 1],
                 "error": [1, 2]
             },
             "items": {
@@ -243,7 +243,7 @@
         },
         {
             "type": "stack_queue",
-            "title": "The Stack Overflow — Data Structure Challenge",
+            "title": "The Stack Overflow - Data Structure Challenge",
             "difficulty": 4,
             "room_description": "Two conveyor belts sit side by side: one behaves like a stack (LIFO) and the other like a queue (FIFO). Crates labelled A–F arrive in a fixed order. You must use PUSH, POP, ENQUEUE, and DEQUEUE to produce the target output.",
             "data": {
@@ -273,7 +273,7 @@
                 "Queues return the oldest item (FIFO).",
                 "Use the stack to reverse short sequences.",
                 "Use the queue to preserve order when needed.",
-                "Plan ahead — once a crate is placed on the output shelf, it cannot be moved."
+                "Plan ahead - once a crate is placed on the output shelf, it cannot be moved."
       ]
     },
 
@@ -290,7 +290,7 @@
       "items": {
         "door": {
           "description": "A reinforced exit door with a glowing keypad.",
-          "examine": "The door has no handle—only a keypad and a small display screen. A note reads: 'Seven guesses. Higher or lower.'"
+          "examine": "The door has no handle-only a keypad and a small display screen. A note reads: 'Seven guesses. Higher or lower.'"
         },
         "keypad": {
           "description": "A numeric keypad with worn-out buttons.",

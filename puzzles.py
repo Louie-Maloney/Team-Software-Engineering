@@ -22,7 +22,7 @@ class BinaryPuzzle(Puzzle):
 class CaesarPuzzle(Puzzle):
     # override help to show the DECODE command specific to this puzzle
     def help(self):
-        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, DECODE <MESSAGE> <SHIFT>, QUIT")
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, DECODE <MESSAGE> <SHIFT>, SKIP")
 
     def caesar_decode(self, text, shift):
         # loop over each character and shift it back in the alphabet
@@ -94,7 +94,7 @@ class PatternPuzzle(Puzzle):
 
     # override help to show the ENTER command specific to this puzzle
     def help(self):
-        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, ENTER <NUMBER>, QUIT")
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, ENTER <NUMBER>, SKIP")
 
     def display_current_sequence(self):
         # shows the sequence for whichever lock the player is currently solving
@@ -167,7 +167,7 @@ class BooleanPuzzle(Puzzle):
         self.expression = config['data']['expression']
 
     def help(self):
-        print("commands: HELP, LOOK, EXAMINE <TARGET>, FLIP <SWITCH>, RESET, HINT, QUIT")
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, FLIP <SWITCH>, RESET, HINT, SKIP")
 
     def evaluate(self):
         s = self.switches
@@ -242,7 +242,7 @@ class GraphPuzzle(Puzzle):
         self.path = [self.start]  # tracks the player's full route
 
     def help(self):
-        print("commands: HELP, LOOK, EXAMINE <TARGET>, MOVE <NODE>, BACK, PATH, HINT, QUIT")
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, MOVE <NODE>, BACK, PATH, HINT, SKIP")
 
     def bfs_shortest_path(self):
         # BFS to find the shortest path from start to exit
@@ -374,8 +374,8 @@ class ParityPuzzle(Puzzle):
         ]
 
         # parity bits (even parity expected)
-        self.row_parity = [1, 0, 0, 0]
-        self.col_parity = [0, 0, 0, 1]
+        self.row_parity = [1, 1, 0, 0]
+        self.col_parity = [0, 0, 1, 1]
 
     # Display
     def display_grid(self):
@@ -395,7 +395,7 @@ class ParityPuzzle(Puzzle):
 
     # Help
     def help(self):
-        print("commands: HELP, CHECK ROW <n>, CHECK COL <n>, FIX ROW <r> COL <c>, QUIT")
+        print("commands: HELP, CHECK ROW <n>, CHECK COL <n>, FIX ROW <r> COL <c>, SKIP")
 
     # Parity check
     def is_even(self, values):
@@ -471,8 +471,8 @@ class ParityPuzzle(Puzzle):
                 self.help()
                 return 'continue'
 
-            elif action == 'quit':
-                return 'quit'
+            elif action == 'skip':
+                return 'skip'
 
             else:
                 print("Invalid command. Type HELP.")
@@ -491,11 +491,14 @@ class RobotPuzzle(Puzzle):
         self.grid = config['data']['grid']
         self.start = tuple(config['data']['start'])
         self.exit_pos = tuple(config['data']['exit'])
+        self.robot_pos = self.start
+        self.robot_dir = config['data']['start_direction']
 
     def help(self):
-        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, PROGRAM <cmds>, QUIT")
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, PROGRAM <cmds>, RESET, SKIP")
         print("  valid moves: MOVE  |  TURN LEFT  |  TURN RIGHT")
         print("  example: PROGRAM MOVE, TURN RIGHT, MOVE, MOVE")
+        print("  RESET restarts the robot from the beginning")
 
     def _draw_grid(self, pos, direction):
         cols = len(self.grid[0])
@@ -521,11 +524,11 @@ class RobotPuzzle(Puzzle):
         self.look()
         self.help()
         print()
-        self._draw_grid(self.start, self.data['start_direction'])
+        self._draw_grid(self.robot_pos, self.robot_dir)
 
     def _simulate(self, commands):
-        pos = self.start
-        direction = self.data['start_direction']
+        pos = self.robot_pos
+        direction = self.robot_dir
         rows = len(self.grid)
         cols = len(self.grid[0])
 
@@ -567,14 +570,25 @@ class RobotPuzzle(Puzzle):
                 self.solved = True
                 return 'solved'
             elif result == 'crash':
-                print(f"Robot crashed at step {steps} — hit a wall or boundary. Try again.")
+                print(f"Robot crashed at step {steps} — hit a wall or boundary. Use RESET to start over.")
+                self.robot_pos = self.start
+                self.robot_dir = self.data['start_direction']
                 return 'wrong'
             elif result == 'invalid':
                 print(f"Unknown command at step {steps}. Valid: MOVE, TURN LEFT, TURN RIGHT")
                 return 'continue'
             else:
-                print(f"Program finished but robot is at row {final_pos[0]+1}, col {final_pos[1]+1} — exit not reached.")
-                return 'wrong'
+                self.robot_pos = final_pos
+                self.robot_dir = final_dir
+                print(f"Robot is now at row {final_pos[0]+1}, col {final_pos[1]+1}, facing {final_dir}.")
+                return 'continue'
+
+        elif action == 'reset':
+            self.robot_pos = self.start
+            self.robot_dir = self.data['start_direction']
+            print("Robot reset to starting position.")
+            self._draw_grid(self.robot_pos, self.robot_dir)
+            return 'continue'
 
         return super().handle_command(inp)
 
@@ -588,7 +602,7 @@ class BookshelfPuzzle(Puzzle):
         self.swap_count = 0
 
     def help(self):
-        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, SWAP <n> <m>, QUIT")
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, SWAP <n> <m>, SKIP")
         print("  (SWAP uses position 1-6, not the number on the book)")
 
     def display_shelf(self):
@@ -657,7 +671,7 @@ class StackQueuePuzzle(Puzzle):
 
     def help(self):
         print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT,")
-        print("          TAKE, PUSH, POP, ENQUEUE, DEQUEUE, PLACE, QUIT")
+        print("          TAKE, PUSH, POP, ENQUEUE, DEQUEUE, PLACE, SKIP")
 
     def display(self):
         self.display_short_desc()
@@ -761,7 +775,7 @@ class BinarySearchPuzzle(Puzzle):
         print(f"Attempts left: {self.attempts}\n")
 
     def help(self):
-        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, GUESS <n>, QUIT")
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, GUESS <n>, SKIP")
 
     def handle_command(self, input):
         parts = input.strip().split()
@@ -823,5 +837,7 @@ def load_puzzle(config):
         return StackQueuePuzzle(config)
     elif config['type'] == 'exit_door':
         return BinarySearchPuzzle(config)
+    elif config['type'] == 'graph':
+        return GraphPuzzle(config)
     else:
         return Puzzle(config) # worst case if errors

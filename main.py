@@ -15,6 +15,16 @@ def title_screen():
     """
     
     input(screen)
+    
+    
+def finish_screen(finished, total):
+    screen = f"""
+    {Fore.LIGHTGREEN_EX}-----------------------------
+    {Fore.LIGHTGREEN_EX}YOU FINISHED {finished}/{total} PUZZLES!
+    {Fore.LIGHTGREEN_EX}CONGRATULATIONS!!!!!!!
+    {Fore.LIGHTGREEN_EX}-----------------------------{Style.RESET_ALL}
+    """
+    print(screen)
 
 def load_puzzles():
     with open('puzzles.json', 'r') as f:
@@ -29,8 +39,8 @@ def play(p: Puzzle):
             continue
         
         result = p.handle_command(text_input)
-        if result == 'quit':
-            return 'quit'
+        if result == 'skip':
+            return 'skip'
         if result == 'solved':
             return 'solved'
         if result == 'continue':
@@ -43,10 +53,16 @@ puzzles = load_puzzles()
 
 def main():
     title_screen()
+    finished = 0
+    total = len(puzzles)
     for i, config in enumerate(puzzles):
-        p = load_puzzle(config)  
+        p = load_puzzle(config)
         print("")
-        play(p)
+        result = play(p)
+        if result == 'solved':
+            finished += 1
+
+    finish_screen(finished, total)
   
 if __name__ == "__main__":
     main()
