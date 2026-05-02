@@ -240,6 +240,73 @@
                 "Start from the left - compare books 1 and 2. If book 1 is larger, swap them, then move to books 2 and 3.",
                 "The largest number will 'bubble' to the right end after one full pass. Optimal solution takes 9 swaps."
             ]
+        },
+        {
+            "type": "stack_queue",
+            "title": "The Stack Overflow — Data Structure Challenge",
+            "difficulty": 4,
+            "room_description": "Two conveyor belts sit side by side: one behaves like a stack (LIFO) and the other like a queue (FIFO). Crates labelled A–F arrive in a fixed order. You must use PUSH, POP, ENQUEUE, and DEQUEUE to produce the target output.",
+            "data": {
+                "input_order": ["A", "B", "C", "D", "E", "F"],
+             "target_order": ["D", "B", "A", "C", "F", "E"]
+      },
+            "items": {
+                "stack": {
+                    "description": "A vertical conveyor belt that behaves like a stack.",
+                    "examine": "The stack takes items with PUSH and returns the most recent item with POP."
+        },
+                "queue": {
+                    "description": "A horizontal conveyor belt that behaves like a queue.",
+                    "examine": "The queue takes items with ENQUEUE and returns the oldest item with DEQUEUE."
+        },
+                "input_belt": {
+                    "description": "A belt delivering crates in a fixed order.",
+                    "examine": "Crates arrive labelled A through F. You must decide where each crate goes."
+        },
+                "output_shelf": {
+                    "description": "A shelf where crates must be placed in the correct target order.",
+                    "examine": "The target order is displayed beside the shelf."
+        }       
+      },
+            "hints": [
+                "Stacks return the most recent item (LIFO).",
+                "Queues return the oldest item (FIFO).",
+                "Use the stack to reverse short sequences.",
+                "Use the queue to preserve order when needed.",
+                "Plan ahead — once a crate is placed on the output shelf, it cannot be moved."
+      ]
+    },
+
+    {
+      "type": "exit_door",
+      "title": "The Final Exit Door",
+      "difficulty": 3,
+      "room_description": "A heavy steel door blocks your escape. A keypad awaits a number between 1 and 100.",
+      "data": {
+        "range_min": 1,
+        "range_max": 100,
+        "attempts": 7
+      },
+      "items": {
+        "door": {
+          "description": "A reinforced exit door with a glowing keypad.",
+          "examine": "The door has no handle—only a keypad and a small display screen. A note reads: 'Seven guesses. Higher or lower.'"
+        },
+        "keypad": {
+          "description": "A numeric keypad with worn-out buttons.",
+          "examine": "You can type GUESS [number]. The display will tell you if the secret number is TOO HIGH or TOO LOW."
+        },
+        "screen": {
+          "description": "A small digital display above the keypad.",
+          "examine": "The screen flashes: 'Enter a number between 1 and 100. Attempts remaining: 7.'"
         }
-    ]
+      },
+      "hints": [
+        "Binary search is the only guaranteed method to solve this in 7 guesses.",
+        "Start by guessing the midpoint of the range.",
+        "Each response eliminates half of the remaining numbers.",
+        "log2(100) is about 7, meaning you can always find the number if you halve the range each time."
+      ]
+    }
+  ]
 }

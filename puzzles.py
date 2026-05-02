@@ -639,6 +639,169 @@ class BookshelfPuzzle(Puzzle):
                 print("Usage: SWAP <n> <m>  e.g. SWAP 1 2")
                 return 'continue'
         return super().handle_command(input)
+    
+class StackQueuePuzzle(Puzzle):
+    def __init__(self, config):
+        super().__init__(config)
+
+      
+        self.input_belt = list(config["data"]["input_order"])
+        self.target = list(config["data"]["target_order"])
+
+       
+        self.stack = []
+        self.queue = deque()
+        self.output = []
+        self.current_crate = None
+        self.solved = False
+
+    def help(self):
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT,")
+        print("          TAKE, PUSH, POP, ENQUEUE, DEQUEUE, PLACE, QUIT")
+
+    def display(self):
+        self.display_short_desc()
+        self.look()
+        self.help()
+
+        print("\n--- PUZZLE STATE ---")
+        print("Input:", self.input_belt)
+        print("Stack:", self.stack)
+        print("Queue:", list(self.queue))
+        print("Target:", self.target)
+        print("Output:", self.output)
+        print("--------------------\n")
+
+    def handle_command(self, input):
+        parts = input.strip().upper().split()
+        if not parts:
+            return "continue"
+
+        action = parts[0]
+
+        
+        if action == "TAKE":
+            if not self.input_belt:
+                print("No more crates on the input belt.")
+            else:
+                self.current_crate = self.input_belt.pop(0)
+                print(f"Took crate {self.current_crate} from input.")
+            return "continue"
+
+       
+        if action == "PUSH":
+            if self.current_crate:
+                self.stack.append(self.current_crate)
+                print(f"Pushed {self.current_crate} onto stack.")
+                self.current_crate = None
+            else:
+                print("No crate in hand.")
+            return "continue"
+
+       
+        if action == "POP":
+            if self.stack:
+                self.current_crate = self.stack.pop()
+                print(f"Popped {self.current_crate} from stack.")
+            else:
+                print("Stack is empty.")
+            return "continue"
+
+       
+        if action == "ENQUEUE":
+            if self.current_crate:
+                self.queue.append(self.current_crate)
+                print(f"Enqueued {self.current_crate} into queue.")
+                self.current_crate = None
+            else:
+                print("No crate in hand.")
+            return "continue"
+
+        
+        if action == "DEQUEUE":
+            if self.queue:
+                self.current_crate = self.queue.popleft()
+                print(f"Dequeued {self.current_crate} from queue.")
+            else:
+                print("Queue is empty.")
+            return "continue"
+
+        
+        if action == "PLACE":
+            if self.current_crate:
+                self.output.append(self.current_crate)
+                print(f"Placed {self.current_crate} on output shelf.")
+                self.current_crate = None
+
+                if self.output == self.target:
+                    print("SUCCESS! You solved the puzzle.")
+                    self.solved = True
+                    return "solved"
+
+                if len(self.output) > len(self.target):
+                    print("Too many crates placed.")
+                    return "wrong"
+            else:
+                print("No crate in hand.")
+            return "continue"
+        return super().handle_command(input)
+    
+class BinarySearchPuzzle(Puzzle):
+    def __init__(self, config):
+        super().__init__(config)
+        self.number = 86
+        self.attempts = 7
+
+    def display(self):
+        self.display_short_desc()
+        self.look()
+        self.help()
+        print("\nFINAL EXIT DOOR")
+        print("Guess a number between 1 and 100")
+        print(f"Attempts left: {self.attempts}\n")
+
+    def help(self):
+        print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, GUESS <n>, QUIT")
+
+    def handle_command(self, input):
+        parts = input.strip().split()
+
+        if not parts:
+            return "continue"
+
+        action = parts[0].lower()
+
+        if action == "guess":
+            if len(parts) < 2:
+                print("Usage: GUESS <number>")
+                return "continue"
+
+            try:
+                guess = int(parts[1])
+            except ValueError:
+                print("Please enter a valid number.")
+                return "continue"
+
+            self.attempts -= 1
+
+            if guess == self.number:
+                print("CORRECT! Door opens...")
+                self.solved = True
+                return "solved"
+
+            if guess > self.number:
+                print(f"TOO HIGH (attempts left: {self.attempts})")
+            else:
+                print(f"TOO LOW (attempts left: {self.attempts})")
+
+            if self.attempts <= 0:
+                print("Out of attempts! The door stays locked.")
+                print(f"The number was: {self.number}")
+                return "wrong"
+
+            return "continue"
+
+        return super().handle_command(input)
 
 
 def load_puzzle(config):
@@ -656,5 +819,9 @@ def load_puzzle(config):
         return RobotPuzzle(config)
     elif config['type'] == 'bookshelf':
         return BookshelfPuzzle(config)
+    elif config['type'] == 'stack_queue':
+        return StackQueuePuzzle(config)
+    elif config['type'] == 'exit_door':
+        return BinarySearchPuzzle(config)
     else:
         return Puzzle(config) # worst case if errors
