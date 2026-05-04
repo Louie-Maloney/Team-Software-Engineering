@@ -19,18 +19,6 @@ class BinaryPuzzle(Puzzle):
         return False
 
     def display(self):
-        # Pull the binary sequences and build a blank answer prompt from the solution length
-        binary_seqs = self.data.get('binary', [])
-        seq_str = '  '.join(binary_seqs)
-        blanks = ' '.join(['_'] * len(self.data['solution']))
-        print(f"""
-+------------------------------------+
-|           [LOCKED SAFE]            |
-|   +---------+                      |
-|   | {blanks:<9}|  Note reads:         |
-|   +---------+  {seq_str:<18}|
-|   [ENTER CODE]                     |
-+------------------------------------+""")
         self.look()
         self.help()
 
@@ -98,15 +86,6 @@ class CaesarPuzzle(Puzzle):
         self.display_short_desc()
         self.look()
         self.help()
-        encoded = self.data['encoded']
-        shift = self.data['shift']
-        # Box is 26 chars wide; encoded padded to 14 fills the screen line exactly
-        print(f"""
-+========================+
-|   CIPHER MACHINE v1.0  |
-|  Screen: {encoded:<14}|
-|  Dial:   [<<< {shift} >>>]   |
-+========================+""")
 
 
 class PatternPuzzle(Puzzle):
