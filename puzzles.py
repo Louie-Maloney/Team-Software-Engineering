@@ -1,9 +1,9 @@
 from puzzle import Puzzle
 from colorama import Fore, Style
+from collections import deque
+
 
 class BinaryPuzzle(Puzzle):
-    
-    
     def check_input(self, input):
         # Input validation: must be a non-empty string, only alphabetic characters allowed
         if not isinstance(input, str) or not input.strip():
@@ -17,6 +17,22 @@ class BinaryPuzzle(Puzzle):
             return True
         print("incorrect answer, try again.")
         return False
+
+    def display(self):
+        # Pull the binary sequences and build a blank answer prompt from the solution length
+        binary_seqs = self.data.get('binary', [])
+        seq_str = '  '.join(binary_seqs)
+        blanks = ' '.join(['_'] * len(self.data['solution']))
+        print(f"""
++------------------------------------+
+|           [LOCKED SAFE]            |
+|   +---------+                      |
+|   | {blanks:<9}|  Note reads:         |
+|   +---------+  {seq_str:<18}|
+|   [ENTER CODE]                     |
++------------------------------------+""")
+        self.look()
+        self.help()
 
 
 class CaesarPuzzle(Puzzle):
@@ -82,8 +98,15 @@ class CaesarPuzzle(Puzzle):
         self.display_short_desc()
         self.look()
         self.help()
-        print(f"\nEncoded message: {self.data['encoded']}")
-        print(f"Dial set to: {self.data['shift']}")
+        encoded = self.data['encoded']
+        shift = self.data['shift']
+        # Box is 26 chars wide; encoded padded to 14 fills the screen line exactly
+        print(f"""
++========================+
+|   CIPHER MACHINE v1.0  |
+|  Screen: {encoded:<14}|
+|  Dial:   [<<< {shift} >>>]   |
++========================+""")
 
 
 class PatternPuzzle(Puzzle):
@@ -97,11 +120,17 @@ class PatternPuzzle(Puzzle):
         print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, ENTER <NUMBER>, SKIP")
 
     def display_current_sequence(self):
-        # shows the sequence for whichever lock the player is currently solving
+        # shows the cabinet with all locks, marking open ones and the current locked one
         if self.current_round < len(self.rounds):
             round_data = self.rounds[self.current_round]
             seq = ', '.join(str(n) for n in round_data['sequence'])
-            print(f"\nLock {self.current_round + 1} of {len(self.rounds)}: [LOCKED]")
+            print("\n+--[COMBINATION CABINET]--+")
+            for i in range(len(self.rounds)):
+                if i < self.current_round:
+                    print(f"|  Lock {i + 1}: [OPEN]        |")
+                else:
+                    print(f"|  Lock {i + 1}: [LOCKED]      |")
+            print("+--------------------------+")
             print(f"Sequence: {seq}, ?")
 
     def display(self):
@@ -160,6 +189,7 @@ class PatternPuzzle(Puzzle):
             print("Please enter a valid integer number.")
             return False
 
+
 class BooleanPuzzle(Puzzle):
     def __init__(self, config):
         super().__init__(config)
@@ -203,7 +233,7 @@ class BooleanPuzzle(Puzzle):
                 key = command[1].strip().upper()
                 if key in self.switches:
                     self.switches[key] ^= 1  # toggle
-                    print(f"Switch {key} → {self.switches[key]}")
+                    print(f"Switch {key} -> {self.switches[key]}")
                     self.display_switches()
                     if self.evaluate():
                         print("The light turns GREEN. The door clicks open!")
@@ -212,7 +242,6 @@ class BooleanPuzzle(Puzzle):
                         print(" ")
                         return 'solved'
                     return 'continue'
-
                 else:
                     print(f"No switch '{key}'. Valid switches: {', '.join(self.switches.keys())}")
                     return 'continue'
@@ -230,7 +259,6 @@ class BooleanPuzzle(Puzzle):
         else:
             return super().handle_command(input)
 
-from collections import deque
 
 class GraphPuzzle(Puzzle):
     def __init__(self, config):
@@ -278,6 +306,11 @@ class GraphPuzzle(Puzzle):
         print("\nItems in the room:")
         for item in self.items:
             print(f"  {item}: {self.items[item]['description']}")
+        # if the JSON config includes an ascii_map string, display it as a wall map
+        ascii_map = self.data.get('ascii_map')
+        if ascii_map:
+            print(f"\nMap on the wall:\n{ascii_map}")
+            print(f"  START: {self.start}    EXIT: {self.exit}")
         self.help()
         self.look()
 
@@ -353,7 +386,7 @@ class GraphPuzzle(Puzzle):
         else:
             extra = player_steps - optimal_steps
             print(f"\nYou took {extra} extra step{'s' if extra != 1 else ''}.")
-            print("The optimal route uses BFS — exploring all neighbours at the current")
+            print("The optimal route uses BFS -- exploring all neighbours at the current")
             print("distance before going deeper, guaranteeing the shortest path in an")
             print("unweighted graph.")
 
@@ -377,13 +410,11 @@ class ParityPuzzle(Puzzle):
         self.row_parity = [1, 1, 0, 0]
         self.col_parity = [0, 0, 1, 1]
 
-    # Display
     def display_grid(self):
         print("\n     C1 C2 C3 C4  P")
         for i, row in enumerate(self.grid):
             row_values = "  ".join(str(x) for x in row)
             print(f"R{i+1}: {row_values} [{self.row_parity[i]}]")
-
         col_parity_str = "".join(f"[{x}]" for x in self.col_parity)
         print(f" P: {col_parity_str}\n")
 
@@ -393,18 +424,15 @@ class ParityPuzzle(Puzzle):
         self.help()
         self.display_grid()
 
-    # Help
     def help(self):
         print("commands: HELP, CHECK ROW <n>, CHECK COL <n>, FIX ROW <r> COL <c>, SKIP")
 
-    # Parity check
     def is_even(self, values):
         return sum(values) % 2 == 0
 
     def check_row(self, r):
         row = self.grid[r]
         total = sum(row) + self.row_parity[r]
-
         if total % 2 == 0:
             print(f"Row {r+1} parity: PASS")
             return True
@@ -415,7 +443,6 @@ class ParityPuzzle(Puzzle):
     def check_col(self, c):
         col = [self.grid[r][c] for r in range(4)]
         total = sum(col) + self.col_parity[c]
-
         if total % 2 == 0:
             print(f"Column {c+1} parity: PASS")
             return True
@@ -423,7 +450,6 @@ class ParityPuzzle(Puzzle):
             print(f"Column {c+1} parity: FAIL")
             return False
 
-    # Error fix
     def fix(self, r, c):
         # flip the bit
         self.grid[r][c] ^= 1
@@ -443,7 +469,6 @@ class ParityPuzzle(Puzzle):
 
         return 'continue'
 
-    # Command handler
     def handle_command(self, input):
         command = input.split()
 
@@ -481,6 +506,8 @@ class ParityPuzzle(Puzzle):
         except (IndexError, ValueError):
             print("Invalid format. Try: CHECK ROW 2 or FIX ROW 2 COL 3")
             return 'continue'
+
+
 class RobotPuzzle(Puzzle):
     DIRECTIONS = ['NORTH', 'EAST', 'SOUTH', 'WEST']
     DELTA = {'NORTH': (-1, 0), 'EAST': (0, 1), 'SOUTH': (1, 0), 'WEST': (0, -1)}
@@ -570,7 +597,7 @@ class RobotPuzzle(Puzzle):
                 self.solved = True
                 return 'solved'
             elif result == 'crash':
-                print(f"Robot crashed at step {steps} — hit a wall or boundary. Use RESET to start over.")
+                print(f"Robot crashed at step {steps} -- hit a wall or boundary. Use RESET to start over.")
                 self.robot_pos = self.start
                 self.robot_dir = self.data['start_direction']
                 return 'wrong'
@@ -592,6 +619,7 @@ class RobotPuzzle(Puzzle):
 
         return super().handle_command(inp)
 
+
 class BookshelfPuzzle(Puzzle):
     OPTIMAL_SWAPS = 9  # minimum bubble-sort swaps for [8,3,5,1,9,2]
 
@@ -609,7 +637,7 @@ class BookshelfPuzzle(Puzzle):
         print("   " + " ".join(f"[{b}]" for b in self.books))
         print("    |   |   |   |   |   |")
         print("   =========================")
-        print("   |       BOOKSHELF       |")
+        print("   |     B O O K S H E L F |")
         print("   =========================")
         print(f"   Swaps: {self.swap_count}")
 
@@ -644,7 +672,7 @@ class BookshelfPuzzle(Puzzle):
                 self.display_shelf()
 
                 if self.books == self.solution:
-                    print("\nThe bookshelf slides aside — a hidden door is revealed!")
+                    print("\nThe bookshelf slides aside -- a hidden door is revealed!")
                     print(f"You solved it in {self.swap_count} swap(s). Optimal bubble sort: {self.OPTIMAL_SWAPS}.")
                     self.solved = True
                     return 'solved'
@@ -653,16 +681,13 @@ class BookshelfPuzzle(Puzzle):
                 print("Usage: SWAP <n> <m>  e.g. SWAP 1 2")
                 return 'continue'
         return super().handle_command(input)
-    
+
+
 class StackQueuePuzzle(Puzzle):
     def __init__(self, config):
         super().__init__(config)
-
-      
         self.input_belt = list(config["data"]["input_order"])
         self.target = list(config["data"]["target_order"])
-
-       
         self.stack = []
         self.queue = deque()
         self.output = []
@@ -673,18 +698,27 @@ class StackQueuePuzzle(Puzzle):
         print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT,")
         print("          TAKE, PUSH, POP, ENQUEUE, DEQUEUE, PLACE, SKIP")
 
+    def _display_state(self):
+        # Show the belt, structures and output in the style from the design doc
+        input_str = '  '.join(f'[{c}]' for c in self.input_belt) if self.input_belt else '[empty]'
+        stack_str = '  '.join(f'[{c}]' for c in self.stack) if self.stack else '|   |'
+        queue_str = '  '.join(f'[{c}]' for c in self.queue) if self.queue else '<   >'
+        target_str = ', '.join(self.target)
+        placed = '  '.join(f'[{c}]' for c in self.output)
+        blanks = '  '.join(['[_]'] * (len(self.target) - len(self.output)))
+        output_str = (placed + '  ' + blanks).strip()
+        print(f"\nInput:  {input_str}")
+        print(f"Stack:  {stack_str}   Queue: {queue_str}")
+        print(f"Target: {target_str}")
+        print(f"Output: {output_str}")
+        if self.current_crate:
+            print(f"In hand: [{self.current_crate}]")
+
     def display(self):
         self.display_short_desc()
         self.look()
         self.help()
-
-        print("\n--- PUZZLE STATE ---")
-        print("Input:", self.input_belt)
-        print("Stack:", self.stack)
-        print("Queue:", list(self.queue))
-        print("Target:", self.target)
-        print("Output:", self.output)
-        print("--------------------\n")
+        self._display_state()
 
     def handle_command(self, input):
         parts = input.strip().upper().split()
@@ -693,7 +727,6 @@ class StackQueuePuzzle(Puzzle):
 
         action = parts[0]
 
-        
         if action == "TAKE":
             if not self.input_belt:
                 print("No more crates on the input belt.")
@@ -702,7 +735,6 @@ class StackQueuePuzzle(Puzzle):
                 print(f"Took crate {self.current_crate} from input.")
             return "continue"
 
-       
         if action == "PUSH":
             if self.current_crate:
                 self.stack.append(self.current_crate)
@@ -712,7 +744,6 @@ class StackQueuePuzzle(Puzzle):
                 print("No crate in hand.")
             return "continue"
 
-       
         if action == "POP":
             if self.stack:
                 self.current_crate = self.stack.pop()
@@ -721,7 +752,6 @@ class StackQueuePuzzle(Puzzle):
                 print("Stack is empty.")
             return "continue"
 
-       
         if action == "ENQUEUE":
             if self.current_crate:
                 self.queue.append(self.current_crate)
@@ -731,7 +761,6 @@ class StackQueuePuzzle(Puzzle):
                 print("No crate in hand.")
             return "continue"
 
-        
         if action == "DEQUEUE":
             if self.queue:
                 self.current_crate = self.queue.popleft()
@@ -740,7 +769,6 @@ class StackQueuePuzzle(Puzzle):
                 print("Queue is empty.")
             return "continue"
 
-        
         if action == "PLACE":
             if self.current_crate:
                 self.output.append(self.current_crate)
@@ -758,8 +786,10 @@ class StackQueuePuzzle(Puzzle):
             else:
                 print("No crate in hand.")
             return "continue"
+
         return super().handle_command(input)
-    
+
+
 class BinarySearchPuzzle(Puzzle):
     def __init__(self, config):
         super().__init__(config)
@@ -770,9 +800,12 @@ class BinarySearchPuzzle(Puzzle):
         self.display_short_desc()
         self.look()
         self.help()
-        print("\nFINAL EXIT DOOR")
-        print("Guess a number between 1 and 100")
-        print(f"Attempts left: {self.attempts}\n")
+        print(f"""
++========================+
+|    FINAL EXIT DOOR     |
+|  Guess a number 1-100  |
+|  Attempts: {self.attempts} remaining |
++========================+""")
 
     def help(self):
         print("commands: HELP, LOOK, EXAMINE <TARGET>, HINT, GUESS <n>, SKIP")
@@ -840,4 +873,4 @@ def load_puzzle(config):
     elif config['type'] == 'graph':
         return GraphPuzzle(config)
     else:
-        return Puzzle(config) # worst case if errors
+        return Puzzle(config)  # fallback
