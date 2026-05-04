@@ -12,7 +12,7 @@
             "items": {
                 "safe": {
                     "description": "A heavy iron safe with a keypad. Binary sequences are etched into the door.",
-                    "examine": "Two sequences are engraved: [ 01001000 ] [ 01001001 ]\nThe keypad has a prompt: 'Enter the ASCII characters.'"
+                    "examine": "You examine the safe closely...\n\n+------------------------------------+\n|           [LOCKED SAFE]            |\n|   +---------+                      |\n|   | _ _     |  Note reads:         |\n|   +---------+  01001000 01001001   |\n|   [ENTER CODE]                     |\n+------------------------------------+\n\nTwo sequences are engraved on the door: [ 01001000 ] [ 01001001 ]\nThe keypad has a prompt: 'Enter the ASCII characters.'"
                 },
                 "chart": {
                     "description": "A faded poster on the wall.",
@@ -41,7 +41,7 @@
             "items": {
                 "machine": {
                     "description": "An old cipher machine with a screen and a rotating dial.",
-                    "examine": "The screen reads: KHOOR ZRUOG\nThe dial is set to 3.\nA label reads: 'Shift back to reveal the truth.'"
+                    "examine": "You examine the cipher machine...\n\n+========================+\n|   CIPHER MACHINE v1.0  |\n|  Screen: KHOOR ZRUOG   |\n|  Dial:   [<<< 3 >>>]   |\n+========================+\n\nThe screen reads: KHOOR ZRUOG\nThe dial is set to 3.\nA label reads: 'Shift back to reveal the truth.'"
                 },
                 "note": {
                     "description": "A note pinned to the wall.",
@@ -245,7 +245,7 @@
             "type": "stack_queue",
             "title": "The Stack Overflow - Data Structure Challenge",
             "difficulty": 4,
-            "room_description": "Two conveyor belts sit side by side: one behaves like a stack (LIFO) and the other like a queue (FIFO). Crates labelled A–F arrive in a fixed order. You must use PUSH, POP, ENQUEUE, and DEQUEUE to produce the target output.",
+            "room_description": "Two conveyor belts sit side by side: one behaves like a stack (LIFO) and the other like a queue (FIFO). Crates labelled A-F arrive in a fixed order. You must use PUSH, POP, ENQUEUE, and DEQUEUE to produce the target output.",
             "data": {
                 "input_order": ["A", "B", "C", "D", "E", "F"],
              "target_order": ["D", "B", "A", "C", "F", "E"]
