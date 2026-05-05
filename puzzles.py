@@ -19,6 +19,7 @@ class BinaryPuzzle(Puzzle):
         return False
 
     def display(self):
+        self.display_short_desc()
         self.look()
         self.help()
 
@@ -279,9 +280,7 @@ class GraphPuzzle(Puzzle):
             print("(This is where you started.)")
 
     def display(self):
-        print(f"puzzle: {self.title}")
-        print(f"difficulty: {self.difficulty}")
-        print(f"\n{self.room_description}")
+        self.display_short_desc()
         print("\nItems in the room:")
         for item in self.items:
             print(f"  {item}: {self.items[item]['description']}")
